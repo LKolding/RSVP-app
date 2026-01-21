@@ -3,6 +3,8 @@ import os
 import sys
 import json
 
+import GUI
+
 text2 = "Now news came to Hithlum that Dorthonion was lost and the sons of Finarfin overthrown, and that the sons of Fëanor were driven from their lands. Then Fingolfin beheld the utter ruin of the Noldor, and the defeat beyond redress of all their houses; and filled with wrath and despair he mounted upon Rochallor his great horse and rode forth alone, and none might restrain him. He passed over Dor-nu-Fauglith like a wind amid the dust, and all that beheld his onset fled in amaze, thinking that Oromë himself was come: for a great madness of rage was upon him, so that his eyes shone like the eyes of the Valar. Thus he came alone to Angband's gates, and he sounded his horn, and smote once more upon the brazen doors, and challenged Morgoth to come forth to single combat. And Morgoth came. "
 
 
@@ -105,4 +107,7 @@ if __name__=="__main__":
         print('Incorrect argument(s) (correct usage: main.py "text in quotation marks")')
         exit()
 
-    application_run(text)
+    gui = GUI.AppGUI()
+    gui.run()
+
+    #application_run(text)
