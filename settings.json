@@ -1,0 +1,8 @@
+{
+    "timeouts" : {
+        "default" : 0.2,
+        "full_stop" : 0.6,
+        "semicolon" : 0.4,
+        "comma" : 0.3
+    }
+}
