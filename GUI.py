@@ -1,49 +1,145 @@
-from tkinter import *
+import tkinter as tk
 from tkinter import ttk
 
+import sys  # for sys.argv
 
-from main import get_offset_from_word
+from text_engine import TextEngine
 
+from utils.word_calculation import get_offset_from_word
+from utils.json_functions import get_settings
 
-def iterate_text(text: str):
-    for word in text.split():
-        yield word
+# --- Tkinter ---
 
-
-class app_data:
-    text = "Now news came to Hithlum that Dorthonion was lost and the sons of Finarfin overthrown, and that the sons of Fëanor were driven from their lands. Then Fingolfin beheld the utter ruin of the Noldor, and the defeat beyond redress of all their houses; and filled with wrath and despair he mounted upon Rochallor his great horse and rode forth alone, and none might restrain him. He passed over Dor-nu-Fauglith like a wind amid the dust, and all that beheld his onset fled in amaze, thinking that Oromë himself was come: for a great madness of rage was upon him, so that his eyes shone like the eyes of the Valar. Thus he came alone to Angband's gates, and he sounded his horn, and smote once more upon the brazen doors, and challenged Morgoth to come forth to single combat. And Morgoth came. "
-
-
-class gui_data:
-    root = Tk()
-    root.title("RSVP | Reading tool")
-
-    frm = ttk.Frame(root, padding=10)
-    frm.grid(sticky=NSEW, padx = 10, pady= 10)
-
-    current_word: StringVar = StringVar(frm, "consequential")
-
-    # 1st row (logo/title)
-    logo_label = ttk.Label(frm, text="RSVP | Reading tool", justify=CENTER).grid(column=0, row=0, columnspan=2, padx = 10, pady = 10)
-
-    # 2nd row
-    word_label = ttk.Label(master=frm, textvariable=current_word, border="6", justify=RIGHT, padding=20).grid(column=0, row=1, columnspan=2, sticky=E)
-
-    # 3rd row
-    begin_btn = ttk.Button(frm, text="Begin").grid(column=0, row=2)
-    pause_btn = ttk.Button(frm, text="Pause").grid(column=1, row=2)
-
-    # 4th row
-    quit_btn  = ttk.Button(frm, text="Quit", command=root.destroy).grid(column=0, row=3, columnspan=2, sticky=E)
-
-    def update_word(word: str) -> bool:
-        pass
+# Text display meant to display one word at a time
+class WordDisplay(tk.Frame):
+    def __init__(self, master: tk.Misc):
+        tk.Frame.__init__(self, master)
+        self._current_word = tk.StringVar(self, 'n/a')
+        self._word_label = ttk.Label(master=self, textvariable=self._current_word, font= ('Courier New', get_settings()['textsize'], ""))
+        self._separator = ttk.Separator(self)
+        self._grid_widgets()
+        
+    def set_word(self, word:str) -> None:
+        self._current_word.set(f'{word:>25}')
+    
+    def _grid_widgets(self):
+        self._separator.pack(fill='x', side=tk.BOTTOM)
+        self._word_label.pack(fill='x', side=tk.BOTTOM)
 
 
-
-class AppGUI:
+# Main Application Window
+class ApplicationWindow(tk.Frame):
+    
     def __init__(self):
-        pass
+        tk.Frame.__init__(self)
+        self._init()
+        
+    def _init(self):
+        self.should_reset: bool = False
+        self.isPaused: bool = False
+        self._progressIntVar = tk.IntVar(self, 0)
+        
+        # --- Widgets ---
+        self.grid_rowconfigure(0, weight=3)
+        self.grid_rowconfigure(1, weight=1)
+        
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        
+        # 1st row
+        self._wordDisplay = WordDisplay(self)
+        
+        # 2nd row
+        self.begin_btn = ttk.Button(self, text="Reset", command=self._reset)    
+        self.pause_btn = ttk.Button(self, text="Pause/unpause", command=self._togglePause)
 
-    def run(self): 
-        gui_data.root.mainloop()
+        # 3rd row
+        self._progressBar = ttk.Progressbar(self,variable=self._progressIntVar)
+
+        self._grid_widgets()
+    
+    def update(self) -> None:
+        self._grid_widgets()
+        return super().update()
+        
+    def _grid_widgets(self) -> None:
+        self._wordDisplay.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW, padx=12, pady=20)
+        self.begin_btn.grid(row=2, column=0, sticky=tk.SW)
+        self.pause_btn.grid(row=2, column=1, sticky=tk.SE)
+        self._progressBar.grid(row=3, column=0, columnspan=2, sticky=tk.S)
+        
+    def _reset(self):
+        self._init()
+        self.update()
+        self.should_reset = not self.should_reset
+
+    def _togglePause(self):
+        self.isPaused = not self.isPaused
+        
+        
+# Application
+class Application(tk.Tk):
+    def __init__(self):
+        tk.Tk.__init__(self)
+        self.wm_title("RSVP App")
+
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        self._app_window = ApplicationWindow()
+        self._grid_widgets()
+        
+    def update(self) -> None:
+        self._grid_widgets()
+        return super().update()
+    
+    def _grid_widgets(self) -> None:
+        self._app_window.grid(sticky=tk.NSEW, padx=10, pady=10)
+        
+
+
+if __name__=="__main__":
+    TEXT = " "
+    
+    if len(sys.argv) > 1:
+        with open(sys.argv[1], 'r') as f:
+            TEXT = f.read()
+    else:
+        TEXT = 'the quick brown fox jumps over the lazy dog'
+        
+    app = Application()
+    engine = TextEngine(TEXT)
+    
+    timeout: float = 1.0  # milliseconds
+    
+    def update_word_and_get_timeout() -> float:
+        word, timeout = engine.next()
+        app._app_window._wordDisplay.set_word(word + ' '*get_offset_from_word(word, 20))
+        return timeout
+    
+    def update_progress_bar() -> None:
+        app._app_window._progressIntVar.set(round(engine._iterator / len(engine._words)*100 ))
+    
+    def logic() -> None:
+        global timeout
+        
+        update_progress_bar()
+        
+        # Reset
+        if app._app_window.should_reset:
+            engine.reset()
+            app._app_window.should_reset = not app._app_window.should_reset
+            
+            if app._app_window.isPaused:
+                timeout = update_word_and_get_timeout()
+        
+        # Pause/unpause
+        if not app._app_window.isPaused:
+            timeout = update_word_and_get_timeout()
+            
+        app._app_window._wordDisplay.after( int(timeout*1000), logic)
+        
+        
+    logic()
+    app.mainloop()
+        
