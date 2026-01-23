@@ -46,3 +46,8 @@ def get_offset_from_word(w: str, right_spacing: int) -> int:
         offset -= 11
 
     return offset
+
+def format_word(word:str, right_spacing:int):
+    # Crucial
+    word = word + ' '*get_offset_from_word(word, right_spacing=right_spacing)
+    return f'{word:>25}'  #<-- 5 extra left-hand character spaces/padding

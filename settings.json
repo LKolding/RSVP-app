@@ -1,11 +1,11 @@
 {
     "timeouts" : {
-        "default" : 0.3,
+        "default" : 0.20,
         "full_stop" : 0.6,
         "colon" : 0.3,
-        "comma" : 0.3,
+        "comma" : 0.2,
         "semicolon" : 0.4
     },
-    "textsize": 24
+    "font": ["Menlo", 36, ""]
 
 }

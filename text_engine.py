@@ -20,20 +20,20 @@ class TextEngine:
             self._settings = new_settings
 
     def _get_word_duration(self, word) -> float:
+        
+        ts:float = self._settings['timeouts']['default']
+        
         if '.' in word[-1]:
-            return (self._settings['timeouts']['full_stop'])
+            ts += (self._settings['timeouts']['full_stop'])
+            return ts
 
         if ';' in word[-3:]:
-            return (self._settings['timeouts']['semicolon'])
+            ts += (self._settings['timeouts']['semicolon'])
 
         elif ',' in word[-3:]:
-            return (self._settings['timeouts']['comma'])
+            ts += (self._settings['timeouts']['comma'])
 
         elif ':' in word[-3:]:
-            return (self._settings['timeouts']['colon'])
-
-        elif '\n' in word[-3:]:
-            return (self._settings['timeouts']['newline'])
-
-        else:
-            return (self._settings['timeouts']['default'])
+            ts += (self._settings['timeouts']['colon'])
+        
+        return ts
