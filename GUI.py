@@ -39,17 +39,12 @@ class ApplicationWindow(tk.Frame):
         
         self._wordDisplay.grid(row=0, column=0, padx=12, pady=20)
         self.reset_btn.grid(row=2, column=0, padx=6, pady=6)
-        self.dummy_btn.grid(row=2, column=1, padx=6, pady=6)  # temp
+        self.dummy_btn.grid(row=4, column=0, padx=6, pady=6)  # temp
         self._progressBar.grid(row=3, column=0, sticky=tk.S, pady=8)
         
         
     def _reset(self):
-        
-        self._wordDisplay.destroy()
-        self._wordDisplay = WordDisplay(self)
-        
-        self.update()
-        self.should_reset = not self.should_reset
+        self.should_reset = True
 
 
     def _togglePause(self):
