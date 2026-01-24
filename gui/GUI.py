@@ -1,9 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
+from PIL import Image, ImageTk
 
 from gui.word_display import WordDisplay
 
 from utils.json_functions import get_settings
+
 
 # Main Application Window
 class ApplicationWindow(tk.Frame):
@@ -11,11 +13,6 @@ class ApplicationWindow(tk.Frame):
     def __init__(self):
         
         tk.Frame.__init__(self)
-        self._init()
-        
-        
-    def _init(self):
-        
         self.should_reset: bool = False
         self.isPaused: bool = True
         self._progressIntVar = tk.IntVar(self, 0)
@@ -29,26 +26,37 @@ class ApplicationWindow(tk.Frame):
         self._wordDisplay = WordDisplay(self)
         # 2nd row
         self.reset_btn = ttk.Button(self, text="Reset", command=self._reset)
-        self.dummy_btn = ttk.Button(self, text='fisse')  # temp
+        self.dummy_btn = ttk.Button(self, text='####')  # temp
+
+        self.img = Image.open("assets\\play.png")
+        self.img = self.img.resize((64, 64), Image.LANCZOS)   # 64x64 is common for toolbar buttons
+
+        self.play_img = ImageTk.PhotoImage(self.img)
+        self.temp_btn = ttk.Button(self, text='??', image=self.play_img)
+
+
         # 4rd row
         self._progressBar = ttk.Progressbar(self,variable=self._progressIntVar, length=200)
         
         self._grid_widgets()
-    
+        
 
     def _grid_widgets(self) -> None:
         
         self._wordDisplay.grid(row=0, column=0, padx=12, pady=20)
-        self.reset_btn.grid(row=2, column=0, padx=6, pady=6)
-        self.dummy_btn.grid(row=4, column=0, padx=6, pady=6)  # temp
-        self._progressBar.grid(row=3, column=0, sticky=tk.S, pady=8)
+        self.reset_btn.grid(row=1, column=0, padx=6, pady=6)
+        self.dummy_btn.grid(row=2, column=0, padx=6, pady=6)  # temp
+        self.temp_btn.grid(row=3, column=0, padx=6, pady=6)   # temp
+        self._progressBar.grid(row=4, column=0, sticky=tk.S, pady=8)
         
         
     def _reset(self):
+
         self.should_reset = True
 
 
     def _togglePause(self):
+
         self.isPaused = not self.isPaused
         
 
@@ -70,5 +78,6 @@ class Application(tk.Tk):
     
     
     def _grid_widgets(self) -> None:
+
         self._app_window.grid(sticky=tk.NSEW, padx=10, pady=10)
         

@@ -1,6 +1,6 @@
 import sys  #for sys.argv
 
-from GUI import Application
+from gui.GUI import Application
 from text_engine import TextEngine
 
 
