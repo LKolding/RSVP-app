@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 
+import platform
+
 from gui.word_display import WordDisplay
 
 from utils.json_functions import get_settings
@@ -28,12 +30,11 @@ class ApplicationWindow(tk.Frame):
         self.reset_btn = ttk.Button(self, text="Reset", command=self._reset)
         self.dummy_btn = ttk.Button(self, text='####')  # temp
 
-        self.img = Image.open("assets\\play.png")
+        self.img = Image.open("assets\\play.png" if platform.system() == 'Windows' else "assets/play.png")
         self.img = self.img.resize((64, 64), Image.LANCZOS)   # 64x64 is common for toolbar buttons
 
         self.play_img = ImageTk.PhotoImage(self.img)
         self.temp_btn = ttk.Button(self, text='??', image=self.play_img)
-
 
         # 4rd row
         self._progressBar = ttk.Progressbar(self,variable=self._progressIntVar, length=200)
@@ -71,7 +72,7 @@ class Application(tk.Tk):
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
-
+        
         self._app_window = ApplicationWindow()
         self._app_window.configure(background=get_settings()['background_color'])
         self._grid_widgets()
