@@ -3,6 +3,7 @@ from tkinter import ttk
 
 from gui.word_display import WordDisplay
 
+from utils.json_functions import get_settings
 
 # Main Application Window
 class ApplicationWindow(tk.Frame):
@@ -58,11 +59,13 @@ class Application(tk.Tk):
         
         tk.Tk.__init__(self)
         self.wm_title("RSVP App")
+        self.configure(background=get_settings()['background_color'])
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         self._app_window = ApplicationWindow()
+        self._app_window.configure(background=get_settings()['background_color'])
         self._grid_widgets()
     
     

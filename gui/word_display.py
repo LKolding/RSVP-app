@@ -15,6 +15,7 @@ class WordText(tk.Text):
             width=30,
             borderwidth=0,
             highlightthickness=0,
+            background=get_settings()['background_color'],
             font=get_settings()['font']
             )
         
