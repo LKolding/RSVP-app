@@ -36,7 +36,7 @@ class WordText(tk.Text):
         self.tag_config("red", foreground="red")
         
         # Compute which character should be red
-        red_index = len(word)-20 # offset from the _right_
+        red_index = len(word)-20  # offset from the _right_
 
         start = f"1.{red_index}"
         end   = f"1.{red_index + 1}"
@@ -46,8 +46,7 @@ class WordText(tk.Text):
     
 class WordDisplay(tk.Frame):
     """
-    Text display meant to display one word at a time.\n 
-    This consists of a ttk.Label and a tk.Separator.\n
+    Text display meant to display one word at a time.\n
     This Frame should be displayed achored/sticky to the _right_. This is crucial.\n
     """
     def __init__(self, master: tk.Misc):
@@ -58,7 +57,6 @@ class WordDisplay(tk.Frame):
         root = self.winfo_toplevel()
         self.configure(bg=root.background_color)
 
-        #self._word_label = ttk.Label(master=self, textvariable=self._current_word, font= ('Menlo', get_settings()['textsize'], ""))
         self._word_label = WordText(self)
         self._word_label.insert(1.0, "n/a")
         
