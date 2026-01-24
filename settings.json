@@ -6,6 +6,5 @@
         "comma" : 0.2,
         "semicolon" : 0.4
     },
-    "font": ["Menlo", 36, ""]
-
+    "font": ["Courier New", 48, "bold"]
 }
