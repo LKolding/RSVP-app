@@ -15,10 +15,13 @@ class ApplicationWindow(tk.Frame):
     def __init__(self):
         
         tk.Frame.__init__(self)
-        self.should_reset: bool = False
-        self.isPaused: bool = True
+        self._should_reset: bool = False
+        self._isPaused: bool = True
         self._progressIntVar = tk.IntVar(self, 0)
         
+        root = self.winfo_toplevel()
+        self.configure(bg=root.background_color)
+
         # --- Widgets ---
         self.grid_rowconfigure(0, weight=3)
         self.grid_rowconfigure(1, weight=1)
@@ -27,17 +30,15 @@ class ApplicationWindow(tk.Frame):
         # 1st row
         self._wordDisplay = WordDisplay(self)
         # 2nd row
-        self.reset_btn = ttk.Button(self, text="Reset", command=self._reset)
-        self.dummy_btn = ttk.Button(self, text='####')  # temp
+        self._reset_btn = tk.Button(self, text="Reset", command=self._reset)
 
-        self.img = Image.open("assets\\play.png" if platform.system() == 'Windows' else "assets/play.png")
-        self.img = self.img.resize((64, 64), Image.LANCZOS)   # 64x64 is common for toolbar buttons
-
-        self.play_img = ImageTk.PhotoImage(self.img)
-        self.temp_btn = ttk.Button(self, text='??', image=self.play_img)
+        img = Image.open("assets\\play.png" if platform.system() == 'Windows' else "assets/play.png")
+        img = img.resize((64, 64), Image.LANCZOS)
+        self._play_img = ImageTk.PhotoImage(img)
+        self._pause_btn = tk.Button(self, text='Pause/unpause', image=self._play_img)
 
         # 4rd row
-        self._progressBar = ttk.Progressbar(self,variable=self._progressIntVar, length=200)
+        self._progressBar = ttk.Progressbar(self,variable=self._progressIntVar)
         
         self._grid_widgets()
         
@@ -45,20 +46,19 @@ class ApplicationWindow(tk.Frame):
     def _grid_widgets(self) -> None:
         
         self._wordDisplay.grid(row=0, column=0, padx=12, pady=20)
-        self.reset_btn.grid(row=1, column=0, padx=6, pady=6)
-        self.dummy_btn.grid(row=2, column=0, padx=6, pady=6)  # temp
-        self.temp_btn.grid(row=3, column=0, padx=6, pady=6)   # temp
-        self._progressBar.grid(row=4, column=0, sticky=tk.S, pady=8)
+        self._reset_btn.grid(row=1, column=0)
+        self._pause_btn.grid(row=2, column=0)
+        self._progressBar.grid(row=3, column=0, sticky=tk.S, pady=8)
         
         
-    def _reset(self):
+    def _reset(self) -> None:
 
-        self.should_reset = True
+        self._should_reset = True
 
 
-    def _togglePause(self):
+    def _togglePause(self) -> None:
 
-        self.isPaused = not self.isPaused
+        self._isPaused = not self._isPaused
         
 
 # Application
@@ -68,15 +68,20 @@ class Application(tk.Tk):
         
         tk.Tk.__init__(self)
         self.wm_title("RSVP App")
-        self.configure(background=get_settings()['background_color'])
+        self._init()
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         
         self._app_window = ApplicationWindow()
-        self._app_window.configure(background=get_settings()['background_color'])
+        #self._app_window.configure(background=get_settings()['background_color'])
         self._grid_widgets()
     
+
+    def _init(self):
+
+        self.background_color = self.cget('bg')
+
     
     def _grid_widgets(self) -> None:
 

@@ -44,14 +44,14 @@ def main():
         update_progress_bar()
         
         # Reset
-        if app._app_window.should_reset:
+        if app._app_window._should_reset:
             engine.reset()
             timeout = update_word_and_get_timeout()
             update_progress_bar()
-            app._app_window.should_reset = not app._app_window.should_reset
+            app._app_window._should_reset = not app._app_window._should_reset
         
         # Pause/unpause
-        if not app._app_window.isPaused:
+        if not app._app_window._isPaused:
             timeout = update_word_and_get_timeout()
             app._app_window._wordDisplay.after( int(timeout*1000), logic)
         

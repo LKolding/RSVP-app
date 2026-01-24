@@ -8,31 +8,32 @@ from utils.word_calculation import format_word
 class WordText(tk.Text):
     
     def __init__(self, master: tk.Misc):
-        
+
         super().__init__(
             master=master,
             height=1,
             width=30,
             borderwidth=0,
             highlightthickness=0,
-            background=get_settings()['background_color'],
             font=get_settings()['font']
             )
+        root = self.winfo_toplevel()  # reference to Tk() instance -> background_color
+        self.configure(background=root.background_color)
         
         
     def update_word(self, word:str):
         
+        self.config(state="normal")
         self.delete("1.0", tk.END)
         self.insert("1.0", word)
         self._red_letter_indicator(word)
+        self.config(state="disabled")
         
         
     def _red_letter_indicator(self, word:str):
         
         self.tag_delete('red')
-        
         self.tag_config("red", foreground="red")
-        self.config(state="normal")
         
         # Compute which character should be red
         red_index = len(word)-20 # offset from the _right_
@@ -54,6 +55,9 @@ class WordDisplay(tk.Frame):
         tk.Frame.__init__(self, master)
         self._current_word = tk.StringVar(self, 'n/a')
         
+        root = self.winfo_toplevel()
+        self.configure(bg=root.background_color)
+
         #self._word_label = ttk.Label(master=self, textvariable=self._current_word, font= ('Menlo', get_settings()['textsize'], ""))
         self._word_label = WordText(self)
         self._word_label.insert(1.0, "n/a")
